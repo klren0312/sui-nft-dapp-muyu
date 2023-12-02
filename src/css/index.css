@@ -1,0 +1,46 @@
+.nft-list {
+    width: 500px;
+    margin-right: 40px;
+}
+
+.game-block {
+    position: relative;
+    width: 600px;
+    height: 600px;
+    display: flex;
+    justify-content: center;
+    align-items: centers;
+}
+.game-block .muyu {
+    width: 400px;
+}
+.game-block .gun {
+    width: 250px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    animation: doit .1s ease-in-out;
+}
+
+.game-block .gd {
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: #f4ea2a;
+    font-size: 36px;
+}
+
+.conn-text {
+    margin-bottom: 20px;
+    color: #f4ea2a;
+    font-weight: bold;
+}
+
+@keyframes doit {
+    from {
+        transform: rotate(-7deg);
+    }
+    to {
+        transform: rotate(-56deg);
+    }
+}
