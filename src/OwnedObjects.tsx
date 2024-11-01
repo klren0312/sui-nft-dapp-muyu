@@ -54,13 +54,13 @@ export function OwnedObjects() {
 
   return (
     <Flex className="nft-list" direction="column" my="2">
-      <Button onClick={() => refetch()} variant="outline">
-        <UpdateIcon width="16" height="16" /> 刷新
-      </Button>
       {data.data.length === 0 ? (
         <Text>你还没有功德记录哦</Text>
       ) : (
-        <Heading size="4" className="conn-text">功德记录</Heading>
+        <Heading size="4" className="conn-text">
+          <span>功德记录</span>
+          <UpdateIcon className="refresh-btn" onClick={() => refetch()} width="16" height="16" />
+        </Heading>
       )}
       <Flex >
       {nfts.map((object) => (

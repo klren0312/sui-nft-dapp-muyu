@@ -1,5 +1,5 @@
-import muyu from './assets/木鱼.svg'
-import muyugun from './assets/木鱼棍.svg'
+import muyu from './assets/muyu.svg'
+import muyugun from './assets/muyugun.svg'
 import soundMp3 from './assets/sound.mp3'
 import { Howl } from 'howler'
 import { useState } from 'react'
@@ -56,6 +56,7 @@ const sound = new Howl({
 })
 export function GameBlock() {
   const [showGun, setShowGun] = useState(false)
+  const [showToast, setShowToast] = useState(false)
   const [num, setNum] = useState(0)
   const { mutate } = useSignAndExecuteTransactionBlock()
   const account = useCurrentAccount()
@@ -65,7 +66,10 @@ export function GameBlock() {
     setShowGun(true)
   }
   const cancelIt = () => {
-    toast.success('赛博功德加一')
+    setShowToast(true)
+    setTimeout(() => {
+      setShowToast(false)
+    }, 2000)
     sound.stop()
     setShowGun(false)
     setNum(num + 1)
@@ -113,6 +117,9 @@ export function GameBlock() {
       <img className="muyu" src={muyu} />
       { showGun && (<img className="gun" src={muyugun} />) }
       <div className="gd">赛博功德：{num}</div>
+      {
+        showToast && (<h1 className="gd-toast">赛博功德加一</h1>)
+      }
     </div>
   );
 }
