@@ -1,9 +1,9 @@
 [package]
-name = "znft"
-version = "0.0.1"
+name = "gdnft"
+version = "0.2.0"
 
 [dependencies]
-Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "framework/mainnet" }
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "framework/testnet" }
 
 [addresses]
-znft = "0x0"
+GdAddress = "0x0"
