@@ -1,11 +1,11 @@
-import muyu from './assets/木鱼.svg'
-import muyugun from './assets/木鱼棍.svg'
+import muyu from './assets/muyu.svg'
+import muyugun from './assets/muyugun.svg'
 import soundMp3 from './assets/sound.mp3'
 import { Howl } from 'howler'
 import { useState } from 'react'
-import { TransactionBlock } from "@mysten/sui.js/transactions"
-import { PACKAGEID } from './constants'
-import { useCurrentAccount, useSignAndExecuteTransactionBlock } from '@mysten/dapp-kit'
+import { Transaction } from '@mysten/sui/transactions';
+import { useNetworkVariable } from "./utils/networkConfig"
+import { useSignAndExecuteTransaction, useCurrentAccount } from '@mysten/dapp-kit';
 import { toast } from 'react-toastify'
 
 interface ImgObj {
@@ -55,9 +55,12 @@ const sound = new Howl({
   html5: true
 })
 export function GameBlock() {
+  const packageId = useNetworkVariable('packageId')
+  console.log(packageId)
   const [showGun, setShowGun] = useState(false)
+  const [showToast, setShowToast] = useState(false)
   const [num, setNum] = useState(0)
-  const { mutate } = useSignAndExecuteTransactionBlock()
+  const { mutate } = useSignAndExecuteTransaction()
   const account = useCurrentAccount()
   const doIt = () => {
     sound.play()
@@ -65,11 +68,14 @@ export function GameBlock() {
     setShowGun(true)
   }
   const cancelIt = () => {
-    toast.success('赛博功德加一')
+    setShowToast(true)
+    setTimeout(() => {
+      setShowToast(false)
+    }, 2000)
     sound.stop()
     setShowGun(false)
     setNum(num + 1)
-    const txb = new TransactionBlock()
+    const txb = new Transaction()
     
     let imgObj: {
       name: string,
@@ -80,24 +86,27 @@ export function GameBlock() {
       imgObj = obj[index]
     }
     if (index.substring(1) && index.substring(1).split('').length > 5 && index.substring(1).split('').every(str => str === '8')) {
-      imgObj = obj['zzes']
+      imgObj = obj['ZCDC']
     }
     if (account && imgObj) {
       txb.moveCall({
-        target: `${PACKAGEID}::my_zpet::transfer`,
+        target: `${packageId}::gdNft::transfer`,
         arguments: [
-          txb.pure(imgObj.name),
-          txb.pure(imgObj.url),
-          txb.pure('赛博功德纪念NFT'),
-          txb.pure(account.address)
+          txb.pure.u8(index === '1' ? 0 : 1),
+          txb.pure.string(imgObj.name),
+          txb.pure.string(imgObj.url),
+          txb.pure.string(index === '1' ? '当前功德: 1' : '赛博功德纪念NFT'),
+          txb.pure.u64(num),
+          txb.pure.address(account.address)
         ]
       })
       mutate(
         {
-          transactionBlock: txb
+          transaction: txb
         },
         {
           onError: (err) => {
+            console.log(err.message)
             toast.error(err.message)
           },
           onSuccess: (result) => {
@@ -113,6 +122,9 @@ export function GameBlock() {
       <img className="muyu" src={muyu} />
       { showGun && (<img className="gun" src={muyugun} />) }
       <div className="gd">赛博功德：{num}</div>
+      {
+        showToast && (<h1 className="gd-toast">赛博功德加一</h1>)
+      }
     </div>
   );
 }
