@@ -1,4 +1,4 @@
-import { Container, Flex, Text } from '@radix-ui/themes';
+import { Container, Flex } from '@radix-ui/themes';
 import { OwnedObjects } from './OwnedObjects';
 import { GameBlock } from './GameBlock';
 

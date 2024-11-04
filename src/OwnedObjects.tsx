@@ -14,29 +14,28 @@ export function OwnedObjects() {
     'getOwnedObjects',
     {
       owner: account?.address as string,
-      // options: {
-      //   showType: true,
-      //   showDisplay: true,
-      //   showContent: true
-      // },
-      // filter: {
-      //   MatchAll: [
-      //     {
-      //       StructType: `${packageId}::gdNft::Gd`,
-      //     },
-      //     {
-      //       AddressOwner: account?.address || '',
-      //     },
-      //   ],
-      // },
+      options: {
+        showType: true,
+        showDisplay: true,
+        showContent: true
+      },
+      filter: {
+        MatchAll: [
+          {
+            StructType: `${packageId}::gdNft::Gd`,
+          },
+          {
+            AddressOwner: account?.address || '',
+          },
+        ],
+      },
     },
-    // {
-    //   enabled: !!account,
-    // }
+    {
+      enabled: !!account,
+    }
   );
 
   let nfts: SuiObjectResponse[] = []
-  console.log(data, isPending, error, refetch)
   
   if (!account) {
     return;
