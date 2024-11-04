@@ -1,38 +1,42 @@
 import { useCurrentAccount, useSuiClientQuery } from '@mysten/dapp-kit'
-import type { SuiObjectResponse } from '@mysten/sui.js/client'
-import { Avatar, Box, Button, Card, Flex, Heading, Text } from '@radix-ui/themes'
-import { PACKAGEID } from './constants';
-import { UpdateIcon } from '@radix-ui/react-icons';
+import type { SuiObjectResponse } from '@mysten/sui/client'
+import { Avatar, Box, Card, Flex, Heading, Text } from '@radix-ui/themes'
+import { UpdateIcon } from '@radix-ui/react-icons'
+import { useNetworkVariable } from './utils/networkConfig'
 
 export function OwnedObjects() {
+  const packageId = useNetworkVariable('packageId')
   const account = useCurrentAccount()
+  if (!account) {
+    return
+  }
   const { data, isPending, error, refetch } = useSuiClientQuery(
     'getOwnedObjects',
     {
       owner: account?.address as string,
-      options: {
-        showType: true,
-        showDisplay: true,
-        showContent: true
-      },
-      filter: {
-        MatchAll: [
-          {
-            StructType: `${PACKAGEID}::my_zpet::Zpet`,
-          },
-          {
-            AddressOwner: account?.address || '',
-          },
-        ],
-      },
+      // options: {
+      //   showType: true,
+      //   showDisplay: true,
+      //   showContent: true
+      // },
+      // filter: {
+      //   MatchAll: [
+      //     {
+      //       StructType: `${packageId}::gdNft::Gd`,
+      //     },
+      //     {
+      //       AddressOwner: account?.address || '',
+      //     },
+      //   ],
+      // },
     },
-    {
-      enabled: !!account,
-    }
+    // {
+    //   enabled: !!account,
+    // }
   );
 
   let nfts: SuiObjectResponse[] = []
-  console.log(data)
+  console.log(data, isPending, error, refetch)
   
   if (!account) {
     return;
@@ -47,7 +51,7 @@ export function OwnedObjects() {
   }
 
   if (data) {
-    const arr = data.data.filter(item => item.data?.type === `${PACKAGEID}::my_zpet::Zpet`)
+    const arr = data.data.filter(item => item.data?.type === `${packageId}::gdNft::Gd`)
     nfts = arr
     console.log(arr)
   }
