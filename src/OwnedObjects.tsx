@@ -3,6 +3,7 @@ import type { SuiObjectResponse } from '@mysten/sui/client'
 import { Avatar, Box, Card, Flex, Heading, Text } from '@radix-ui/themes'
 import { UpdateIcon } from '@radix-ui/react-icons'
 import { useNetworkVariable } from './utils/networkConfig'
+import Event from './utils/event'
 
 export function OwnedObjects() {
   const packageId = useNetworkVariable('packageId')
@@ -34,6 +35,10 @@ export function OwnedObjects() {
       enabled: !!account,
     }
   );
+  // 监听刷新事件
+  Event.on('Event:Refresh', () => {
+    refetch()
+  })
 
   let nfts: SuiObjectResponse[] = []
   
@@ -51,20 +56,21 @@ export function OwnedObjects() {
 
   if (data) {
     const arr = data.data.filter(item => item.data?.type === `${packageId}::gdNft::Gd`)
+    // 查找记录本
+    const recordBook = arr.find(item => item.data?.display?.data?.type === '0')
+    if (recordBook) {
+      Event.emit('Event:RecordBook', recordBook)
+    }
     nfts = arr
     console.log(arr)
   }
 
   return (
     <Flex className="nft-list" direction="column" my="2">
-      {data.data.length === 0 ? (
-        <Text>你还没有功德记录哦</Text>
-      ) : (
-        <Heading size="4" className="conn-text">
-          <span>功德记录</span>
-          <UpdateIcon className="refresh-btn" onClick={() => refetch()} width="16" height="16" />
-        </Heading>
-      )}
+      <Heading size="4" className="conn-text">
+        <span>功德记录</span>
+        <UpdateIcon className="refresh-btn" onClick={() => refetch()} width="16" height="16" />
+      </Heading>
       <Flex >
       {nfts.map((object) => (
         <Card key={object.data?.objectId} style={{ minWidth: 150, maxWidth: 150 }}>
