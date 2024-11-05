@@ -110,9 +110,6 @@ export function GameBlock() {
       mutate(
         {
           transaction: txb,
-          options: {
-            showEvents: true,
-          },
         },
         {
           onError: (err) => {
