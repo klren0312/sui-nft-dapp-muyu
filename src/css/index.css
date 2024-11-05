@@ -1,6 +1,13 @@
 .app-title {
     color: rgba(255, 215, 0);
 }
+
+.record-text {
+    margin-left: 20px;
+    padding: 5px 10px;
+    border: 1px solid #ffd700;
+    cursor: pointer;
+}
 .wallet-btn {
     color: #333;
     background: #ffd700 !important;
@@ -59,9 +66,13 @@
 }
 
 .gd-toast {
-    font-size: 2em;
-    color: rgba(255, 215, 0);
-    position: relative;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 5rem;
+    color: rgb(255, 129, 3);
+    text-align: center;
     animation: disappear 3s forwards;
 }
 

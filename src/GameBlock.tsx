@@ -7,6 +7,7 @@ import { Transaction } from '@mysten/sui/transactions';
 import { useNetworkVariable } from "./utils/networkConfig"
 import { useSignAndExecuteTransaction, useCurrentAccount } from '@mysten/dapp-kit';
 import { toast } from 'react-toastify'
+import Event from './utils/event'
 
 interface ImgObj {
   [key: string]: {
@@ -56,15 +57,20 @@ const sound = new Howl({
 })
 export function GameBlock() {
   const packageId = useNetworkVariable('packageId')
-  console.log(packageId)
   const [showGun, setShowGun] = useState(false)
   const [showToast, setShowToast] = useState(false)
+  const [recordObj, setRecordObj] = useState<any>()
+  const [originNum, setOriginNum] = useState(0)
   const [num, setNum] = useState(0)
   const { mutate } = useSignAndExecuteTransaction()
   const account = useCurrentAccount()
+
+  Event.on('Event:RecordBook', (recordBook: any) => {
+    setRecordObj(recordBook)
+    setOriginNum(parseInt(recordBook.data.display.data.count))
+  })
   const doIt = () => {
     sound.play()
-    console.log(showGun)
     setShowGun(true)
   }
   const cancelIt = () => {
@@ -82,10 +88,11 @@ export function GameBlock() {
       url: string
     } | undefined = undefined
     const index = num + 1 + ''
-    if (Object.keys(obj).includes(index)) {
-      imgObj = obj[index]
+    const checkIndex = num + 1 + originNum + ''
+    if (Object.keys(obj).includes(checkIndex)) {
+      imgObj = obj[checkIndex]
     }
-    if (index.substring(1) && index.substring(1).split('').length > 5 && index.substring(1).split('').every(str => str === '8')) {
+    if (checkIndex.substring(1) && checkIndex.substring(1).split('').length > 5 && checkIndex.substring(1).split('').every(str => str === '8')) {
       imgObj = obj['ZCDC']
     }
     if (account && imgObj) {
@@ -96,13 +103,16 @@ export function GameBlock() {
           txb.pure.string(imgObj.name),
           txb.pure.string(imgObj.url),
           txb.pure.string(index === '1' ? '当前功德: 1' : '赛博功德纪念NFT'),
-          txb.pure.u64(num),
+          txb.pure.u64(index),
           txb.pure.address(account.address)
         ]
       })
       mutate(
         {
-          transaction: txb
+          transaction: txb,
+          options: {
+            showEvents: true,
+          },
         },
         {
           onError: (err) => {
@@ -115,13 +125,45 @@ export function GameBlock() {
         }
       )
     }
+  }
 
+  const doRecord = () => {
+    if (!account) {
+      return
+    }
+    const txb = new Transaction()
+    console.log(recordObj)
+    txb.moveCall({
+      target: `${packageId}::gdNft::add_count`,
+      arguments: [
+        txb.object(recordObj.data.objectId),
+        txb.pure.u64(originNum + num),
+        txb.pure.string('当前功德：' + (originNum + num))
+      ]
+    })
+    mutate(
+      {
+        transaction: txb
+      },
+      {
+        onError: (err) => {
+          console.log(err.message)
+          toast.error(err.message)
+        },
+        onSuccess: (result) => {
+          Event.emit('Event:Refresh')
+          setOriginNum(originNum + num)
+          setNum(0)
+          toast.success(`赛博功德记录成功: ${result.digest}`)
+        },
+      }
+    )
   }
   return (
     <div className="game-block" onMouseDown={doIt} onMouseUp={cancelIt}>
       <img className="muyu" src={muyu} />
       { showGun && (<img className="gun" src={muyugun} />) }
-      <div className="gd">赛博功德：{num}</div>
+      <div className="gd">赛博功德：{ originNum + num } <span className="record-text" onClick={doRecord}>记录功德</span></div>
       {
         showToast && (<h1 className="gd-toast">赛博功德加一</h1>)
       }

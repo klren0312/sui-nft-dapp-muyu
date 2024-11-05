@@ -122,11 +122,12 @@ module GdAddress::gdNft {
     public entry fun add_count(
         nft: &mut Gd,
         count: u64,
+        description: String,
         _: &mut TxContext
     ) {
         if (count > nft.count) {
             nft.count =  count;
-            nft.description = utf8(b"当前功德: {count.to_string()}");
+            nft.description = description;
         }
     }
 
