@@ -157,10 +157,10 @@ export function GameBlock() {
     )
   }
   return (
-    <div className="game-block" onMouseDown={doIt} onMouseUp={cancelIt}>
-      <img className="muyu" src={muyu} />
+    <div className="game-block">
+      <img onMouseDown={doIt} onMouseUp={cancelIt} className="muyu" src={muyu} />
       { showGun && (<img className="gun" src={muyugun} />) }
-      <div className="gd">赛博功德：{ originNum + num } <span className="record-text" onClick={doRecord}>记录功德</span></div>
+      <div className="gd">赛博功德：{ originNum + num } <span className="record-text" onClick={(e) => {e.preventDefault(); doRecord()}}>记录功德</span></div>
       {
         showToast && (<h1 className="gd-toast">赛博功德加一</h1>)
       }
